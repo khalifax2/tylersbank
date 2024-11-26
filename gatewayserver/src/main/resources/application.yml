@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: gatewayserver
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false # disabled default locator
+          lowerCaseServiceId: true
+      httpclient: # Note that this will be ignored if you have defined pattern like circuit breaker
+        connect-timeout: 1000
+        response-timeout: 2s
+  data:
+    redis:
+      connect-timeout: 2s
+      host: localhost
+      port: 6379
+      timeout: 1s
+
+server:
+  port: 8000
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    gateway:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: "gatewayserver"
+    description: "Eazy Bank Gateway Server Application"
+    version: "1.0.0"
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 5 # Monitor request
+      permittedNumberOfCallsInHalfOpenState: 2
+      failureRateThreshold: 50
+      waitDurationInOpenState: 20000
